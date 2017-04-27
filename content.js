@@ -11,7 +11,7 @@ var DOMAIN;
 var USER_NAME;
 var REPOSITORY_NAME;
 var BRANCH;
-var MODULE_NAME; // gadle based projects have modules
+var MODULE_NAME; // gradle based projects have modules
 var SOURCE_FOLDER_ROOT;
 
 var ANDROID_REFERENCE_URL_BASE = "https://developer.android.com/reference/";
@@ -39,7 +39,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         if (packageBelongsToOurSourceCode(packageName) || packageBelongsToAndroid(packageName)) {
           var className = getClassName(packageName);
           if (className !== 'R') {
-            var browseableClass = new BrowseableClass(className, packageName);
+            var browseableClass = new BrowseableClass(className, packageName, msg.ext);
             arrayOfBroweseableClasses.push(browseableClass);
             // console.log(browseableClass.getGithubUrl());
           }
@@ -121,9 +121,10 @@ function getClassName(packageName) {
   return elementsOfPackageName[elementsOfPackageName.length - 1];
 }
 
-function BrowseableClass(className, packageName) {
+function BrowseableClass(className, packageName, ext) {
   this.className = className;
   this.packageName = packageName;
+  this.ext = ext;
 }
 
 BrowseableClass.prototype.getLinkedUrl = function () {
@@ -135,7 +136,7 @@ BrowseableClass.prototype.getLinkedUrl = function () {
     var packageNameWithSlashes = result[0].replace(/\./g, "\/");
     return PROTOCOL + "://" + DOMAIN + "/" + USER_NAME + "/" + REPOSITORY_NAME +
       "/blob/" + BRANCH + "/" + MODULE_NAME + "/" + SOURCE_FOLDER_ROOT + "/"
-      + packageNameWithSlashes + this.className + '.java';
+      + packageNameWithSlashes + this.className + "." + this.ext;
   }
 };
 
